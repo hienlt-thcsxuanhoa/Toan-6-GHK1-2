@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiểm tra Giữa HK1 Toán 6 - Kết nối tri thức</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: #f8fafc;
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Floating & Pulse animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-6px) rotate(1deg); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.9; }
+        }
+        .animate-pulse-soft {
+            animation: pulse-soft 2.5s ease-in-out infinite;
+        }
+
+        /* Shimmer effect for exam cards */
+        .card-shimmer {
+            position: relative;
+            overflow: hidden;
+        }
+        .card-shimmer::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                60deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.4) 50%,
+                transparent 70%
+            );
+            transform: rotate(30deg) translateY(-100%);
+            transition: transform 0.8s ease;
+        }
+        .card-shimmer:hover::after {
+            transform: rotate(30deg) translateY(100%);
+        }
+
+        input[type="radio"]:checked + label {
+            background-color: #f0f7ff;
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+        .radio-custom:checked {
+            accent-color: #3b82f6;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-700 font-sans min-h-screen flex flex-col antialiased">
+
+    <!-- Header / Banner - Dịu nhẹ, thanh lịch -->
+    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-40 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto py-3 px-4 md:px-8 flex flex-col md:flex-row justify-between items-center gap-3">
+            <!-- Thông tin giáo viên -->
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2.5 bg-sky-50/80 border border-sky-100 px-3.5 py-1.5 rounded-xl text-sky-800 shadow-sm">
+                    <span class="w-2.5 h-2.5 rounded-full bg-sky-500 animate-ping"></span>
+                    <div class="text-xs">
+                        <span class="block text-[10px] text-sky-500 font-semibold uppercase tracking-wider">Giáo viên biên soạn</span>
+                        <span class="font-bold text-sky-900 text-sm">Lưu Tuấn Hiện</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tên trường & Tên đề -->
+            <div class="text-center">
+                <div class="inline-flex items-center gap-2 mb-0.5">
+                    <span class="text-base md:text-xl font-extrabold tracking-wide text-slate-800">THCS XUÂN HÒA</span>
+                    <span class="text-slate-300">•</span>
+                    <span class="text-sm md:text-lg font-bold text-sky-600">PHÂN HIỆU TÂN DƯƠNG</span>
+                </div>
+                <p class="text-xs md:text-sm font-semibold text-slate-500 tracking-wider uppercase">Kiểm Tra Giữa Học Kì I - Môn Toán 6</p>
+            </div>
+
+            <!-- Đồng hồ -->
+            <div id="exam-timer" class="hidden text-xl md:text-2xl font-mono font-bold bg-amber-50/90 border border-amber-200/80 px-4 py-1.5 rounded-xl shadow-sm text-amber-700 flex items-center gap-2.5 animate-pulse-soft">
+                <svg class="w-5 h-5 text-amber-600 animate-spin" style="animation-duration: 10s;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="9" stroke-width="2" stroke-dasharray="4 2"></circle>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 7v5l3 2"></path>
+                </svg>
+                <span id="timer-text">90:00</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-6xl w-full mx-auto p-4 md:p-6 flex flex-col">
+        <!-- Màn hình 0: Đăng nhập / Thông tin học sinh -->
+        <div id="screen-login" class="fade-in bg-white/90 backdrop-blur rounded-3xl shadow-xl shadow-slate-200/50 p-6 md:p-10 max-w-md w-full mx-auto my-auto border border-slate-100 relative overflow-hidden">
+            <!-- Decorative badge icon -->
+            <div class="absolute -right-8 -top-8 w-32 h-32 bg-sky-100/50 rounded-full blur-2xl pointer-events-none"></div>
+            
+            <div class="text-center mb-6 relative">
+                <div class="w-16 h-16 bg-sky-50 text-sky-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm border border-sky-100 animate-float">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 tracking-tight">ĐĂNG NHẬP THI TRỰC TUYẾN</h2>
+                <p class="text-xs text-slate-500 mt-1">Vui lòng điền thông tin học sinh để bắt đầu làm bài</p>
+            </div>
+
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Họ và tên học sinh <span class="text-rose-500">*</span></label>
+                    <input type="text" id="student-name" required class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 focus:outline-none transition font-medium text-slate-800 bg-slate-50/50" placeholder="Nguyễn Văn An">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Lớp <span class="text-rose-500">*</span></label>
+                    <input type="text" id="student-class" required class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 focus:outline-none transition font-medium text-slate-800 bg-slate-50/50" placeholder="6A1">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Phân hiệu trường (Tùy chọn)</label>
+                    <input type="text" id="student-sbd" class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 focus:outline-none transition font-medium text-slate-800 bg-slate-50/50" placeholder="Phân hiệu Tân Dương">
+                </div>
+                <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 active:scale-[0.99] text-white font-semibold py-3.5 rounded-xl shadow-md shadow-sky-600/20 transition duration-200 mt-2 flex items-center justify-center gap-2">
+                    <span>Xác Nhận & Vào Chọn Đề</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+            </form>
+        </div>
+
+        <!-- Màn hình 1: Trang chủ / Chọn đề -->
+        <div id="screen-home" class="hidden fade-in bg-white rounded-3xl shadow-sm border border-slate-200/80 p-6 md:p-10 text-center">
+            <div class="bg-sky-50/60 border border-sky-100 rounded-2xl p-3.5 mb-8 inline-flex flex-wrap items-center justify-center gap-3 text-sky-900 text-sm">
+                <span class="font-semibold flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    <span id="display-student-name" class="text-sky-950 font-bold"></span>
+                </span>
+                <span class="text-sky-200">•</span>
+                <span class="font-medium">Lớp: <span id="display-student-class" class="text-sky-950 font-bold"></span></span>
+                <span id="display-sbd-wrapper" class="hidden"><span class="text-sky-200">•</span> <span class="font-medium">Phân hiệu: <span id="display-student-sbd" class="text-sky-950 font-bold"></span></span></span>
+                <button onclick="logoutStudent()" class="text-xs bg-white border border-sky-200 hover:bg-sky-100 text-sky-700 font-medium px-2.5 py-1 rounded-lg transition ml-2">Sửa thông tin</button>
+            </div>
+
+            <div class="max-w-xl mx-auto mb-8">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-slate-800 tracking-tight">Danh Sách Đề Kiểm Tra</h2>
+                <p class="text-slate-500 text-sm mt-1">Chọn một mã đề để mở giao diện làm bài. Thời gian làm bài 90 phút.</p>
+            </div>
+
+            <div id="exam-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                <!-- Nút chọn đề sẽ được render tại đây với hiệu ứng card động -->
+            </div>
+        </div>
+
+        <!-- Màn hình 2: Làm bài thi -->
+        <div id="screen-exam" class="hidden fade-in">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 p-6 md:p-10 mb-8">
+                <div class="border-b border-slate-100 pb-5 mb-8 flex flex-col md:flex-row justify-between md:items-center gap-3">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span id="exam-title-code" class="bg-sky-100 text-sky-700 font-extrabold text-sm px-3 py-1 rounded-lg border border-sky-200"></span>
+                            <h2 class="text-2xl md:text-3xl font-extrabold text-slate-800 tracking-tight">Bài Kiểm Tra Toán 6</h2>
+                        </div>
+                        <p class="text-xs md:text-sm text-slate-500 mt-1">Thí sinh: <strong id="exam-student-info" class="text-slate-800"></strong></p>
+                    </div>
+                    <span class="text-xs text-slate-400 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200/60 self-start md:self-auto">Thời gian: 90 Phút • Tự động nộp khi hết giờ</span>
+                </div>
+
+                <div id="exam-content" class="space-y-10">
+                    <!-- Nội dung đề thi sẽ được render tại đây -->
+                </div>
+
+                <div class="mt-12 pt-6 border-t border-slate-100 flex justify-center">
+                    <button onclick="confirmSubmit()" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-lg px-10 py-3.5 rounded-2xl shadow-lg shadow-emerald-600/20 transition duration-200 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        Hoàn Thành & Nộp Bài
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Màn hình 3: Kết Quả -->
+        <div id="screen-result" class="hidden fade-in bg-white rounded-3xl shadow-sm border border-slate-200/80 p-6 md:p-10">
+            <div class="text-center border-b border-slate-100 pb-8 mb-8">
+                <div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-emerald-100">
+                    <svg class="w-8 h-8 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-extrabold text-slate-800 mb-1">Kết Quả Đánh Giá Bài Làm</h2>
+                <p class="text-base text-sky-700 font-bold mb-1" id="res-student-info"></p>
+                <p class="text-xs text-slate-400">Mã đề: <span id="res-code" class="font-bold text-sky-600"></span></p>
+                
+                <div class="flex flex-col sm:flex-row justify-center gap-5 mt-6">
+                    <!-- Điểm tự động -->
+                    <div class="bg-sky-50/60 border border-sky-100 rounded-2xl p-5 sm:w-56">
+                        <p class="text-xs text-sky-600 font-bold uppercase tracking-wider mb-1">Điểm Trắc nghiệm</p>
+                        <p class="text-4xl font-extrabold text-sky-700" id="res-auto-score">0.0</p>
+                        <p class="text-xs text-slate-400 mt-1">/ 7.0 điểm</p>
+                    </div>
+                    <!-- Điểm tự luận -->
+                    <div class="bg-amber-50/60 border border-amber-100 rounded-2xl p-5 sm:w-56">
+                        <p class="text-xs text-amber-600 font-bold uppercase tracking-wider mb-1">Điểm Tự luận</p>
+                        <p class="text-2xl font-bold text-amber-700 mt-2">Chờ chấm</p>
+                        <p class="text-xs text-slate-400 mt-1">/ 3.0 điểm</p>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <button onclick="location.reload()" class="bg-slate-800 hover:bg-slate-900 text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition shadow-sm">
+                        Về trang chủ / Chọn đề khác
+                    </button>
+                </div>
+            </div>
+
+            <!-- Review chi tiết -->
+            <div id="review-content" class="space-y-6">
+                <!-- Nội dung review render bằng JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Chân Trang - Dịu nhẹ, tinh tế -->
+    <footer class="bg-white border-t border-slate-200 text-slate-500 text-xs mt-12 py-8 px-4 md:px-8">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <!-- Thông tin trường -->
+            <div class="text-center md:text-left space-y-1">
+                <p class="font-bold text-slate-700 text-sm">TRƯỜNG THCS XUÂN HÒA - PHÂN HIỆU TÂN DƯƠNG</p>
+                <p class="text-slate-400">Địa chỉ: Bản Tân Dương, xã Xuân Hòa, tỉnh Lào Cai • Điện thoại: 0977460100</p>
+            </div>
+
+            <!-- Hỗ trợ & Bản quyền -->
+            <div class="text-center md:text-right space-y-1 border-t md:border-t-0 pt-4 md:pt-0 border-slate-100">
+                <p>Hotline / Zalo hỗ trợ: <a href="tel:0977460100" class="font-bold text-sky-600 hover:underline">0977460100</a></p>
+                <p class="text-slate-400">©Copyright 2026 - GIÁO VIÊN LƯU TUẤN HIỆN</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal Thông báo -->
+    <div id="custom-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 transition-opacity duration-200 opacity-0">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl transform scale-95 transition-transform duration-200 border border-slate-100" id="modal-panel">
+            <h3 class="text-lg font-bold text-slate-800 mb-2" id="modal-title"></h3>
+            <p class="text-xs text-slate-600 mb-6 leading-relaxed" id="modal-message"></p>
+            <div class="flex gap-2" id="modal-actions"></div>
+        </div>
+    </div>
+
+    <script>
+        // Trạng thái ứng dụng & học sinh
+        let studentInfo = { name: '', studentClass: '', sbd: '' };
+        let currentCode = '101';
+        let timeLeft = 90 * 60;
+        let timerInterval = null;
+        let isExamActive = false;
+        let cheatWarnings = 0;
+
+        // Bổ sung: Tính năng Anti-Cheat (Chống thoát màn hình)
+        document.addEventListener("visibilitychange", () => {
+            if (isExamActive && document.hidden) {
+                cheatWarnings++;
+                if (cheatWarnings >= 3) {
+                    showModal('Vi phạm nghiêm trọng!', `Bạn đã thoát khỏi màn hình làm bài ${cheatWarnings} lần.\nHệ thống sẽ tự động thu bài ngay lập tức!`, [
+                        {text: 'Nộp bài bắt buộc', class: 'bg-rose-600 text-white w-full font-bold hover:bg-rose-700', onClick: () => { hideModal(); submitExam(); }}
+                    ]);
+                } else {
+                    showModal('Cảnh báo gian lận!', `Bạn không được phép thoát khỏi hoặc ẩn màn hình khi đang thi.\n\nSố lần vi phạm: ${cheatWarnings}/3.\nNếu vi phạm 3 lần, hệ thống sẽ tự động thu bài.`, [
+                        {text: 'Tôi đã hiểu', class: 'bg-amber-600 text-white w-full font-bold hover:bg-amber-700', onClick: hideModal}
+                    ]);
+                }
+            }
+        });
+
+        // Dữ liệu Tất cả các Đề Hoàn chỉnh (101 - 110)
+        const exams = {
+            "101": {
+                part1: [
+                    { q: "Cho tập hợp C = {4; 16; 23; 38}. Cách viết nào sau đây đúng?", opts: ["{4} ∈ C", "23 ∉ C", "31 ∈ C", "4 ∈ C"], ans: 3 },
+                    { q: "Số La Mã XXIV có giá trị là:", opts: ["24", "26", "34", "20"], ans: 0 },
+                    { q: "Số tự nhiên liền sau của số 599 là:", opts: ["597", "598", "600", "601"], ans: 2 },
+                    { q: "Viết tích 3 · 3 · 3 · 3 · 3 dưới dạng một lũy thừa ta được:", opts: ["3⁴", "3 · 5", "3⁵", "5³"], ans: 2 },
+                    { q: "Giá trị của biểu thức 28 + 7 · 3 − 14 là:", opts: ["63", "91", "35", "119"], ans: 2 },
+                    { q: "Số nào sau đây là ước của 24?", opts: ["12", "10", "5", "7"], ans: 0 },
+                    { q: "Số nào sau đây là số nguyên tố?", opts: ["39", "31", "49", "111"], ans: 1 },
+                    { q: "Hình nào sau đây có bốn cạnh bằng nhau và bốn góc vuông?", opts: ["Hình vuông", "Hình bình hành", "Hình thoi", "Hình chữ nhật"], ans: 0 },
+                    { q: "Số nào sau đây chia hết cho cả 2 và 5?", opts: ["5461", "4502", "2315", "4750"], ans: 3 },
+                    { q: "Phân tích số 60 ra thừa số nguyên tố ta được:", opts: ["4 · 3 · 5", "2² · 3 · 5", "2³ · 3 · 5", "2² · 3 · 7"], ans: 1 },
+                    { q: "Một tam giác đều có chu vi 18 cm. Độ dài mỗi cạnh của tam giác đó là:", opts: ["18 cm", "12 cm", "9 cm", "6 cm"], ans: 3 },
+                    { q: "Một mảnh đất hình chữ nhật có chu vi 56 m, chiều dài hơn chiều rộng 4 m. Diện tích mảnh đất là:", opts: ["256 m²", "192 m²", "204 m²", "144 m²"], ans: 1 }
+                ],
+                part2: [
+                    { context: "Cho hai số tự nhiên 72 và 96. Xét tính đúng, sai của các khẳng định sau:", statements: [
+                        { text: "a) 103 là số nguyên tố.", ans: true },
+                        { text: "b) 14 là ước của 72.", ans: false },
+                        { text: "c) 96 chia hết cho 2.", ans: true },
+                        { text: "d) ƯCLN(72, 96) = 3.", ans: false }
+                    ]},
+                    { context: "Một mảnh đất có dạng hình chữ nhật ABCD với AB = 25 m, BC = 12 m. Xét tính đúng, sai:", statements: [
+                        { text: "a) Cạnh CD dài 12 m.", ans: false },
+                        { text: "b) Hai đường chéo AC và BD bằng nhau.", ans: true },
+                        { text: "c) Chu vi của mảnh đất là 74 m.", ans: true },
+                        { text: "d) Nếu trồng cỏ toàn bộ mảnh đất với giá 15.000 đ/m² thì chi phí là 1.110.000 đ.", ans: false }
+                    ]}
+                ],
+                part3: [
+                    { q: "Giá trị của biểu thức 2³ · 5 − 12 : 4 là bao nhiêu?", ans: "37" },
+                    { q: "Số 18 có bao nhiêu ước?", ans: "6" },
+                    { q: "Tìm ƯCLN(36, 48).", ans: "12" },
+                    { q: "Trường tổ chức cho 232 HS đi trải nghiệm. Mỗi xe chở tối đa 45 HS. Hỏi cần ít nhất bao nhiêu xe?", ans: "6" }
+                ],
+                part4: [
+                    { q: "<strong>Bài 1 (1,0 điểm).</strong><br>a) Tính hợp lí: A = 37 · 48 + 37 · 52 − 1500.<br>b) Tìm số tự nhiên x, biết: (x − 7) · 4 = 72.", guide: "a) A = 37 · (48 + 52) − 1500 = 37 · 100 − 1500 = 2200.<br>b) x − 7 = 72 : 4 = 18 => x = 18 + 7 = 25." },
+                    { q: "<strong>Bài 2 (1,0 điểm).</strong><br>Lớp 6A có 18 HS nam và 24 HS nữ. Cô giáo muốn chia lớp thành các tổ sao cho số HS nam và nữ ở mỗi tổ đều bằng nhau, đồng thời số tổ nhiều nhất có thể.<br>a) Chia nhiều nhất thành bao nhiêu tổ?<br>b) Khi đó mỗi tổ có bao nhiêu HS nam, bao nhiêu HS nữ?", guide: "a) Số tổ nhiều nhất là ƯCLN(18, 24) = 6 (tổ).<br>b) Mỗi tổ có: 18 : 6 = 3 (nam) và 24 : 6 = 4 (nữ)." },
+                    { q: "<strong>Bài 3 (1,0 điểm).</strong><br>Mảnh đất hình thoi ABCD có 2 đường chéo AC = 18 m, BD = 14 m.<br>a) Tính diện tích mảnh đất.<br>b) Bà Lan trồng hoa trên cả mảnh đất, mỗi m² trồng 4 cây hoa giống, giá 5.000 đ/cây. Tính số tiền mua cây giống.", guide: "a) S = (18 · 14) / 2 = 126 m².<br>b) Số cây = 126 · 4 = 504 cây. Tiền = 504 · 5.000 = 2.520.000 đ." }
+                ]
+            },
+            "102": {
+                part1: [
+                    { q: "Tập hợp M = {x ∈ N* | x < 5} được viết bằng cách liệt kê là:", opts: ["{0; 1; 2; 3; 4; 5}", "{1; 2; 3; 4}", "{0; 1; 2; 3; 4}", "{1; 2; 3; 4; 5}"], ans: 1 },
+                    { q: "Số 19 được viết bằng số La Mã là:", opts: ["XXIX", "XVIII", "XIX", "XXIII"], ans: 2 },
+                    { q: "Số tự nhiên liền trước của số 2000 là:", opts: ["2001", "1999", "1990", "1998"], ans: 1 },
+                    { q: "Kết quả của phép tính 4⁵ · 4² viết dưới dạng lũy thừa là:", opts: ["4⁶", "16⁷", "4¹⁰", "4⁷"], ans: 3 },
+                    { q: "Giá trị của biểu thức 6 · (11 + 9) − 18 là:", opts: ["12", "138", "93", "102"], ans: 3 },
+                    { q: "Số nào sau đây là bội của 7?", opts: ["80", "46", "90", "63"], ans: 3 },
+                    { q: "Số nào sau đây là hợp số?", opts: ["57", "61", "79", "47"], ans: 0 },
+                    { q: "Lục giác đều ABCDEF có bao nhiêu đường chéo chính?", opts: ["2", "3", "6", "4"], ans: 1 },
+                    { q: "Số nào sau đây chia hết cho 9?", opts: ["3879", "5027", "2996", "5988"], ans: 0 },
+                    { q: "Phân tích số 72 ra thừa số nguyên tố đúng là:", opts: ["72 = 2³ · 3²", "252 = 4 · 3² · 7", "150 = 2² · 3 · 5²", "84 = 4 · 3 · 7"], ans: 0 },
+                    { q: "Một hình vuông có chu vi 28 cm. Độ dài cạnh của hình vuông là:", opts: ["28 cm", "11 cm", "7 cm", "14 cm"], ans: 2 },
+                    { q: "Tấm bìa hình vuông cạnh 12 dm, cắt bỏ 1 hình chữ nhật 5 dm × 3 dm ở góc. Diện tích phần còn lại là:", opts: ["159 dm²", "63 dm²", "129 dm²", "136 dm²"], ans: 2 }
+                ],
+                part2: [
+                    { context: "Cho hai số tự nhiên 36 và 60. Xét tính đúng, sai:", statements: [
+                        { text: "a) 59 là số nguyên tố.", ans: true },
+                        { text: "b) 30 là ước của 60.", ans: true },
+                        { text: "c) 60 chia hết cho 9.", ans: false },
+                        { text: "d) ƯCLN(36, 60) = 3.", ans: false }
+                    ]},
+                    { context: "Mảnh vườn hình thoi ABCD với AB = 10 m, AC = 12 m, BD = 16 m. Xét tính đúng, sai:", statements: [
+                        { text: "a) Cạnh CD dài 10 m.", ans: true },
+                        { text: "b) Hai đường chéo AC và BD vuông góc với nhau.", ans: true },
+                        { text: "c) Diện tích mảnh vườn là 192 m².", ans: false },
+                        { text: "d) Làm hàng rào xung quanh với giá 100.000 đ/m thì chi phí là 4.000.000 đ.", ans: true }
+                    ]}
+                ],
+                part3: [
+                    { q: "Giá trị của biểu thức 100 − 3 · (4² + 8) là bao nhiêu?", ans: "28" },
+                    { q: "Có bao nhiêu số tự nhiên khác 0, nhỏ hơn 50, là bội của 7?", ans: "7" },
+                    { q: "Tìm BCNN(12, 18).", ans: "36" },
+                    { q: "Mẹ mua 5 kg gạo (18k/kg) và 3 chai dầu ăn (45k/chai). Đưa 300k. Cô bán hàng trả lại bao nhiêu nghìn?", ans: "75" }
+                ],
+                part4: [
+                    { q: "<strong>Bài 1 (1,0 điểm).</strong><br>a) Tính hợp lí: B = 4 · 37 · 25.<br>b) Tìm số tự nhiên x, biết: 4 · (x + 5) − 20 = 40.", guide: "a) B = (4 · 25) · 37 = 100 · 37 = 3700.<br>b) 4 · (x + 5) = 60 => x + 5 = 15 => x = 10." },
+                    { q: "<strong>Bài 2 (1,0 điểm).</strong><br>An cứ 6 ngày trực nhật 1 lần, Bình cứ 8 ngày trực 1 lần. Hôm nay hai bạn cùng trực.<br>a) Sau ít nhất bao nhiêu ngày hai bạn lại cùng trực?<br>b) Khi đó An trực mấy lần, Bình trực mấy lần?", guide: "a) Số ngày ít nhất là BCNN(6, 8) = 24 (ngày).<br>b) An trực: 24 : 6 = 4 lần; Bình trực: 24 : 8 = 3 lần." },
+                    { q: "<strong>Bài 3 (1,0 điểm).</strong><br>Sân vườn hình chữ nhật 15 m × 12 m, xây bồn hoa hình vuông cạnh 4 m ở góc, phần còn lại lát gạch.<br>a) Tính diện tích phần lát gạch.<br>b) Chi phí lát gạch là 200.000 đ/m², tính tổng chi phí.", guide: "a) S sân = 180 m², S bồn = 16 m² => S lát gạch = 180 − 16 = 164 m².<br>b) Chi phí = 164 · 200.000 = 32.800.000 đ." }
+                ]
+            },
+            "103": {
+                part1: [
+                    { q: "Cho tập hợp B = {x ∈ N | 3 < x < 7}. Khẳng định nào đúng?", opts: ["B có 4 phần tử", "4 ∈ B", "7 ∈ B", "3 ∈ B"], ans: 1 },
+                    { q: "Số tự nhiên gồm 5 chục nghìn, 6 nghìn, 2 trăm, 9 chục, 3 đơn vị là:", opts: ["52 693", "56 293", "56 239", "56 923"], ans: 1 },
+                    { q: "Dãy số nào được sắp xếp theo thứ tự tăng dần?", opts: ["7189; 7198; 7918; 7819", "7198; 7189; 7819; 7918", "7918; 7819; 7198; 7189", "7189; 7198; 7819; 7918"], ans: 3 },
+                    { q: "Kết quả của phép tính 5⁶ : 5² dưới dạng lũy thừa là:", opts: ["5⁸", "5⁵", "5⁴", "5¹²"], ans: 2 },
+                    { q: "Giá trị của biểu thức 8 + 2² · 5 là:", opts: ["28", "60", "500", "108"], ans: 0 },
+                    { q: "Tập hợp các ước của 20 là:", opts: ["{1; 2; 4; 5; 10; 20}", "{1; 2; 3; 4; 5; 10; 20}", "{2; 4; 5; 10; 20}", "{1; 2; 4; 5; 10}"], ans: 0 },
+                    { q: "Phát biểu nào sau đây là đúng?", opts: ["Số nguyên tố nhỏ nhất là 3", "Số 1 không là số nguyên tố cũng không là hợp số", "Hợp số chỉ có đúng 2 ước", "Mọi số lẻ đều là số nguyên tố"], ans: 1 },
+                    { q: "Tam giác đều là tam giác có:", opts: ["ba cạnh khác nhau", "một góc vuông", "hai cạnh bằng nhau", "ba cạnh bằng nhau"], ans: 3 },
+                    { q: "Để số 3*7 chia hết cho 9 thì chữ số * là:", opts: ["8", "9", "6", "7"], ans: 0 },
+                    { q: "Phân tích số 84 ra thừa số nguyên tố ta được:", opts: ["2² · 3 · 5", "2³ · 3 · 7", "2² · 3 · 7", "4 · 3 · 7"], ans: 2 },
+                    { q: "Một lục giác đều có cạnh dài 8 cm. Chu vi lục giác đó là:", opts: ["14 cm", "24 cm", "40 cm", "48 cm"], ans: 3 },
+                    { q: "Sân chơi hình chữ nhật 24 m × 15 m. Tăng chiều dài thêm 3 m, giữ nguyên chiều rộng thì diện tích tăng thêm:", opts: ["72 m²", "18 m²", "45 m²", "405 m²"], ans: 2 }
+                ],
+                part2: [
+                    { context: "Cho hai số tự nhiên 84 và 126. Xét tính đúng, sai:", statements: [
+                        { text: "a) 103 là hợp số.", ans: false },
+                        { text: "b) 126 là bội của 3.", ans: true },
+                        { text: "c) 84 chia hết cho 3.", ans: true },
+                        { text: "d) BCNN(84, 126) = 252.", ans: true }
+                    ]},
+                    { context: "Khu vườn hình bình hành ABCD với AB = 18 m, AD = 10 m, chiều cao ứng với AB là 8 m. Xét tính đúng, sai:", statements: [
+                        { text: "a) Cạnh CD dài 18 m.", ans: true },
+                        { text: "b) Hai đường chéo AC và BD vuông góc với nhau.", ans: false },
+                        { text: "c) Chu vi khu vườn là 28 m.", ans: false },
+                        { text: "d) Trồng cỏ cả khu vườn giá 25.000 đ/m² thì chi phí là 3.600.000 đ.", ans: true }
+                    ]}
+                ],
+                part3: [
+                    { q: "Giá trị của biểu thức 5² + 3 · (20 − 2 · 4) là bao nhiêu?", ans: "61" },
+                    { q: "Số tự nhiên lớn nhất có hai chữ số là bội của 7 là số nào?", ans: "98" },
+                    { q: "Tìm ƯCLN(24, 36, 60).", ans: "12" },
+                    { q: "Có 250 chiếc bánh xếp vào các hộp 12 chiếc. Mỗi hộp bán 60k. Bán hết các hộp đầy thu được bao nhiêu nghìn?", ans: "1200" }
+                ],
+                part4: [
+                    { q: "<strong>Bài 1 (1,0 điểm).</strong><br>a) Thực hiện phép tính: C = 3² · 2³ + 5² − 2⁹ : 2⁶.<br>b) Tìm số tự nhiên x, biết: 2ˣ · 3 = 96.", guide: "a) C = 9 · 8 + 25 − 8 = 72 + 25 − 8 = 89.<br>b) 2ˣ = 96 : 3 = 32 = 2⁵ => x = 5." },
+                    { q: "<strong>Bài 2 (1,0 điểm).</strong><br>Số HS khối 6 trong khoảng 100 đến 200. Khi xếp hàng 8, 10, 12 đều vừa đủ.<br>a) Tìm BCNN(8, 10, 12).<br>b) Tính số HS khối 6.", guide: "a) BCNN(8, 10, 12) = 120.<br>b) x ∈ BC(8,10,12) = B(120) và 100 ≤ x ≤ 200 => x = 120." },
+                    { q: "<strong>Bài 3 (1,0 điểm).</strong><br>Phòng khách hình chữ nhật 8 m × 6 m, lát gạch hình vuông cạnh 4 dm.<br>a) Tính số viên gạch cần dùng.<br>b) Mỗi viên gạch giá 20.000 đ. Tính tổng tiền mua gạch.", guide: "a) Đổi 8 m = 80 dm, 6 m = 60 dm. Số viên = (80:4) · (60:4) = 20 · 15 = 300 viên.<br>b) Tiền = 300 · 20.000 = 6.000.000 đ." }
+                ]
+            },
+            "104": {
+                part1: [
+                    { q: "Cho tập hợp E = {4; 12; 33; 36}. Cách viết đúng là:", opts: ["33 ∉ E", "12 ∈ E", "{12} ∈ E", "14 ∈ E"], ans: 1 },
+                    { q: "Số La Mã XXVIII có giá trị là:", opts: ["38", "24", "32", "28"], ans: 3 },
+                    { q: "Số tự nhiên liền sau của số 4599 là:", opts: ["4597", "4601", "4598", "4600"], ans: 3 },
+                    { q: "Giá trị của lũy thừa 2⁵ là:", opts: ["34", "25", "10", "32"], ans: 3 },
+                    { q: "Giá trị của biểu thức 25 + 7 · 3 − 19 là:", opts: ["65", "27", "115", "77"], ans: 1 },
+                    { q: "Số nào sau đây là ước của 42?", opts: ["9", "40", "14", "10"], ans: 2 },
+                    { q: "Số nào sau đây là số nguyên tố?", opts: ["33", "79", "63", "111"], ans: 1 },
+                    { q: "Hình nào sau đây có 6 cạnh bằng nhau và 6 góc bằng nhau?", opts: ["Tam giác đều", "Hình chữ nhật", "Lục giác đều", "Hình vuông"], ans: 2 },
+                    { q: "Cho A = 20 + 32 + x. Để A chia hết cho 4 thì x có thể nhận giá trị:", opts: ["11", "13", "36", "18"], ans: 2 },
+                    { q: "Phân tích số 90 ra thừa số nguyên tố đúng là:", opts: ["90 = 2 · 3² · 5", "252 = 2³ · 3² · 7", "60 = 4 · 3 · 5", "72 = 4 · 2 · 3²"], ans: 0 },
+                    { q: "Lục giác đều ABCDEF có cạnh AB = 9 cm. Độ dài đường chéo chính AD là:", opts: ["18 cm", "9 cm", "27 cm", "54 cm"], ans: 0 },
+                    { q: "Mảnh đất hình chữ nhật có chu vi 56 m, chiều dài hơn chiều rộng 8 m. Diện tích là:", opts: ["180 m²", "190 m²", "324 m²", "100 m²"], ans: 0 }
+                ],
+                part2: [
+                    { context: "Cho hai số tự nhiên 90 và 150. Xét tính đúng, sai:", statements: [
+                        { text: "a) 57 là hợp số.", ans: true },
+                        { text: "b) 90 là bội của 20.", ans: false },
+                        { text: "c) 150 chia hết cho 9.", ans: false },
+                        { text: "d) BCNN(90, 150) = 450.", ans: true }
+                    ]},
+                    { context: "Thửa ruộng hình thang cân ABCD (AB//CD) có AB = 12 m, CD = 28 m, AD = BC = 10 m, h = 6 m. Xét đúng, sai:", statements: [
+                        { text: "a) Hai đáy AB và CD có độ dài bằng nhau.", ans: false },
+                        { text: "b) Hai cạnh bên AD và BC song song.", ans: false },
+                        { text: "c) Diện tích thửa ruộng là 120 m².", ans: true },
+                        { text: "d) Làm bờ rào xung quanh giá 150.000 đ/m thì chi phí là 9.000.000 đ.", ans: true }
+                    ]}
+                ],
+                part3: [
+                    { q: "Giá trị của biểu thức 3² · 4 − 18 : 6 là bao nhiêu?", ans: "33" },
+                    { q: "Số tự nhiên nhỏ nhất có 3 chữ số là bội của 13 là số nào?", ans: "104" },
+                    { q: "Tìm BCNN(4, 6, 10).", ans: "60" },
+                    { q: "Đoàn 4 người lớn (vé 80k) và 36 học sinh (vé 50k). Tổng tiền vé là bao nhiêu nghìn?", ans: "2120" }
+                ],
+                part4: [
+                    { q: "<strong>Bài 1 (1,0 điểm).</strong><br>a) Tính hợp lí: A = 64 · 29 + 64 · 71 − 2000.<br>b) Tìm số tự nhiên x, biết: x : 6 + 35 = 47.", guide: "a) A = 64 · (29 + 71) − 2000 = 6400 − 2000 = 4400.<br>b) x : 6 = 12 => x = 72." },
+                    { q: "<strong>Bài 2 (1,0 điểm).</strong><br>Cắt 2 tấm vải dài 36 m và 60 m thành các mảnh bằng nhau, dài nhất có thể.<br>a) Mỗi mảnh dài bao nhiêu mét?<br>b) Cắt được tất cả bao nhiêu mảnh vải?", guide: "a) Độ dài mỗi mảnh là ƯCLN(36, 60) = 12 m.<br>b) Tổng số mảnh = 36:12 + 60:12 = 3 + 5 = 8 mảnh." },
+                    { q: "<strong>Bài 3 (1,0 điểm).</strong><br>Khu vườn hình bình hành ABCD có đáy AB = 16 m, cạnh bên AD = 9 m, chiều cao h = 7 m.<br>a) Tính diện tích khu vườn.<br>b) Làm hàng rào xung quanh giá 120.000 đ/m. Tính chi phí làm hàng rào.", guide: "a) S = 16 · 7 = 112 m².<br>b) Chu vi = 2 · (16 + 9) = 50 m. Chi phí = 50 · 120.000 = 6.000.000 đ." }
+                ]
+            },
+            "105": {
+                part1: [
+                    { q: "Tập hợp M = {x ∈ N* | x < 6} được viết theo cách liệt kê là:", opts: ["{0; 1; 2; 3; 4; 5}", "{1; 2; 3; 4; 5}", "{1; 2; 3; 4; 5; 6}", "{0; 1; 2; 3; 4; 5; 6}"], ans: 1 },
+                    { q: "Số 14 được viết bằng số La Mã là:", opts: ["XIII", "XV", "XXIV", "XIV"], ans: 3 },
+                    { q: "Số tự nhiên liền trước của số 100 là:", opts: ["90", "99", "98", "101"], ans: 1 },
+                    { q: "Viết tích 7 · 7 · 7 dưới dạng lũy thừa ta được:", opts: ["7²", "3⁷", "7 · 3", "7³"], ans: 3 },
+                    { q: "Giá trị của biểu thức 6 · (12 + 6) − 7 là:", opts: ["66", "71", "101", "85"], ans: 2 },
+                    { q: "Số nào sau đây là bội của 11?", opts: ["44", "113", "85", "135"], ans: 0 },
+                    { q: "Số nào sau đây là hợp số?", opts: ["61", "49", "41", "79"], ans: 1 },
+                    { q: "Tam giác đều ABC có AB = 6 cm. Độ dài cạnh AC là:", opts: ["18 cm", "12 cm", "6 cm", "8 cm"], ans: 2 },
+                    { q: "Số nào chia hết cho cả 2 và 5?", opts: ["5970", "3317", "7304", "4855"], ans: 0 },
+                    { q: "Phân tích số 120 ra thừa số nguyên tố ta được:", opts: ["2³ · 3 · 7", "4 · 2 · 3 · 5", "2⁴ · 3 · 5", "2³ · 3 · 5"], ans: 3 },
+                    { q: "Phát biểu nào sau đây đúng với hình vuông?", opts: ["Có 4 cạnh bằng nhau và 4 góc vuông", "Có 2 cạnh kề không bằng nhau", "Có 2 đường chéo không bằng nhau", "Không có cặp cạnh đối nào song song"], ans: 0 },
+                    { q: "Tấm bìa hình vuông cạnh 10 dm, cắt bỏ góc chữ nhật 6 dm × 2 dm. Diện tích còn lại:", opts: ["112 dm²", "92 dm²", "88 dm²", "32 dm²"], ans: 2 }
+                ],
+                part2: [
+                    { context: "Cho hai số tự nhiên 48 và 60. Xét tính đúng, sai:", statements: [
+                        { text: "a) 143 là số nguyên tố.", ans: false },
+                        { text: "b) 13 là ước của 48.", ans: false },
+                        { text: "c) 48 chia hết cho 3.", ans: true },
+                        { text: "d) ƯCLN(48, 60) = 12.", ans: true }
+                    ]},
+                    { context: "Mảnh đất hình chữ nhật ABCD có AB = 30 m, BC = 18 m. Xét đúng, sai:", statements: [
+                        { text: "a) Cạnh CD dài 30 m.", ans: true },
+                        { text: "b) Hai đường chéo AC và BD bằng nhau.", ans: true },
+                        { text: "c) Chu vi mảnh đất là 96 m.", ans: true },
+                        { text: "d) Trồng cỏ giá 50.000 đ/m² thì chi phí là 4.800.000 đ.", ans: false }
+                    ]}
+                ],
+                part3: [
+                    { q: "Giá trị của biểu thức 120 − 5 · (3² + 6) là bao nhiêu?", ans: "45" },
+                    { q: "Số 24 có bao nhiêu ước?", ans: "8" },
+                    { q: "Tìm ƯCLN(54, 90).", ans: "18" },
+                    { q: "Trường tổ chức cho 305 HS đi trải nghiệm, xe chở tối đa 40 HS. Cần thuê ít nhất bao nhiêu xe?", ans: "8" }
+                ],
+                part4: [
+                    { q: "<strong>Bài 1 (1,0 điểm).</strong><br>a) Thực hiện phép tính: C = 2⁴ · 5 − 3³ + 7⁵ : 7³.<br>b) Tìm số tự nhiên x, biết: 10 + 3 · (x − 7) = 34.", guide: "a) C = 16 · 5 − 27 + 49 = 80 − 27 + 49 = 102.<br>b) 3 · (x − 7) = 24 => x − 7 = 8 => x = 15." },
+                    { q: "<strong>Bài 2 (1,0 điểm).</strong><br>Hai xe buýt rời bến lúc 6h. Xe 1 cứ 18 phút về bến, xe 2 cứ 24 phút về bến.<br>a) Sau ít nhất bao nhiêu phút hai xe lại cùng ở bến?<br>b) Khi đó là mấy giờ?", guide: "a) Số phút ít nhất là BCNN(18, 24) = 72 phút.<br>b) 72 phút = 1 giờ 12 phút => Hai xe cùng ở bến lúc 7 giờ 12 phút." },
+                    { q: "<strong>Bài 3 (1,0 điểm).</strong><br>Thửa ruộng hình thang cân ABCD có đáy nhỏ AB = 10 m, đáy lớn CD = 22 m, h = 8 m.<br>a) Tính diện tích thửa ruộng.<br>b) Mỗi m² thu 2 kg thóc, giá 9.000 đ/kg. Tính số tiền thu được khi bán hết thóc.", guide: "a) S = (10 + 22) · 8 / 2 = 128 m².<br>b) Thóc = 128 · 2 = 256 kg. Tiền = 256 · 9.000 = 2.304.000 đ." }
+                ]
+            },
+            "106": {
+                part1: [
+                    { q: "Cho tập hợp B = {x ∈ N | 5 < x < 9}. Khẳng định nào đúng?", opts: ["9 ∈ B", "B có 4 phần tử", "7 ∈ B", "5 ∈ B"], ans: 2 },
+                    { q: "Số tự nhiên gồm 9 chục nghìn, 0 nghìn, 5 trăm, 3 chục, 1 đơn vị là:", opts: ["90 513", "90 531", "95 031", "90 351"], ans: 1 },
+                    { q: "Dãy số nào được sắp xếp theo thứ tự tăng dần?", opts: ["1274; 1427; 1742; 1724", "1274; 1427; 1724; 1742", "1427; 1274; 1724; 1742", "1742; 1724; 1427; 1274"], ans: 1 },
+                    { q: "Kết quả của 2³ · 2⁵ dưới dạng lũy thừa là:", opts: ["4⁸", "2⁷", "2¹⁵", "2⁸"], ans: 3 },
+                    { q: "Giá trị của biểu thức 9 + 3² · 6 là:", opts: ["864", "108", "333", "63"], ans: 3 },
+                    { q: "Tập hợp các ước của 24 là:", opts: ["{1; 2; 3; 4; 6; 8; 12; 21; 24}", "{1; 2; 3; 4; 6; 8; 12; 24}", "{1; 2; 3; 4; 6; 8; 12}", "{2; 3; 4; 6; 8; 12; 24}"], ans: 1 },
+                    { q: "Phát biểu nào sau đây là đúng?", opts: ["Mọi số lẻ đều là số nguyên tố", "Mọi số chẵn đều là hợp số", "Số 1 không là số nguyên tố cũng không là hợp số", "Số 1 là số nguyên tố"], ans: 2 },
+                    { q: "Mỗi góc của hình vuông là góc gì?", opts: ["Góc vuông", "Góc tù", "Góc bẹt", "Góc nhọn"], ans: 0 },
+                    { q: "Số nào sau đây chia hết cho 9?", opts: ["6945", "9802", "1205", "2799"], ans: 3 },
+                    { q: "Phân tích số 126 ra thừa số nguyên tố đúng là:", opts: ["90 = 6 · 3 · 5", "180 = 2³ · 3² · 5", "126 = 2 · 3² · 7", "72 = 4 · 2 · 3²"], ans: 2 },
+                    { q: "Tam giác đều có chu vi 33 cm. Độ dài mỗi cạnh là:", opts: ["11 cm", "33 cm", "14 cm", "22 cm"], ans: 0 },
+                    { q: "Sân chơi hình chữ nhật 22 m × 18 m. Tăng chiều dài 5 m, giữ nguyên chiều rộng thì diện tích tăng thêm:", opts: ["90 m²", "23 m²", "110 m²", "486 m²"], ans: 0 }
+                ],
+                part2: [
+                    { context: "Cho hai số tự nhiên 45 và 75. Xét tính đúng, sai:", statements: [
+                        { text: "a) 51 là hợp số.", ans: true },
+                        { text: "b) 45 là bội của 3.", ans: true },
+                        { text: "c) 75 chia hết cho 5.", ans: true },
+                        { text: "d) ƯCLN(45, 75) = 3.", ans: false }
+                    ]},
+                    { context: "Mảnh vườn hình thoi ABCD với AB = 13 m, AC = 24 m, BD = 10 m. Xét đúng, sai:", statements: [
+                        { text: "a) Cạnh CD dài 24 m.", ans: false },
+                        { text: "b) Hai đường chéo AC và BD vuông góc với nhau.", ans: true },
+                        { text: "c) Diện tích mảnh vườn là 240 m².", ans: false },
+                        { text: "d) Làm hàng rào xung quanh giá 100.000 đ/m thì chi phí là 12.000.000 đ.", ans: false }
+                    ]}
+                ],
+                part3: [
+                    { q: "Giá trị của biểu thức 4² + 2 · (25 − 3 · 5) là bao nhiêu?", ans: "36" },
+                    { q: "Có bao nhiêu số tự nhiên khác 0, nhỏ hơn 70, là bội của 8?", ans: "8" },
+                    { q: "Tìm BCNN(15, 20).", ans: "60" },
+                    { q: "Mẹ mua 4 kg gạo (22k/kg) và 2 chai dầu ăn (52k/chai). Đưa 200k. Cô bán hàng trả lại bao nhiêu nghìn?", ans: "8" }
+                ],
+                part4: [
+                    { q: "<strong>Bài 1 (1,0 điểm).</strong><br>a) Tính hợp lí: B = 8 · 59 · 125.<br>b) Tìm số tự nhiên x, biết: (x − 5) · 3 = 78.", guide: "a) B = (8 · 125) · 59 = 1000 · 59 = 59000.<br>b) x − 5 = 78 : 3 = 26 => x = 31." },
+                    { q: "<strong>Bài 2 (1,0 điểm).</strong><br>Thư viện có từ 130 đến 200 quyển sách. Đóng thành từng bó 6, 8 hoặc 9 quyển đều vừa đủ.<br>a) Tìm BCNN(6, 8, 9).<br>b) Tính số quyển sách của thư viện.", guide: "a) BCNN(6, 8, 9) = 72.<br>b) x ∈ BC(6,8,9) = B(72) và 130 ≤ x ≤ 200 => x = 144." },
+                    { q: "<strong>Bài 3 (1,0 điểm).</strong><br>Mảnh đất hình chữ nhật có chu vi 60 m, chiều dài hơn chiều rộng 6 m.<br>a) Tính chiều dài và chiều rộng mảnh đất.<br>b) Trồng cỏ cả mảnh đất giá 25.000 đ/m². Tính chi phí trồng cỏ.", guide: "a) Nửa chu vi = 30 m. Chiều dài = (30 + 6)/2 = 18 m, rộng = 12 m.<br>b) S = 18 · 12 = 216 m². Chi phí = 216 · 25.000 = 5.400.000 đ." }
+                ]
+            },
+            "107": {
+                part1: [
+                    { q: "Cho tập hợp A = {16; 23; 37; 38}. Cách viết đúng là:", opts: ["23 ∈ A", "34 ∈ A", "38 ∉ A", "{23} ∈ A"], ans: 0 },
+                    { q: "Số La Mã XVIII có giá trị là:", opts: ["16", "28", "22", "18"], ans: 3 },
+                    { q: "Số tự nhiên liền sau của số 5099 là:", opts: ["5097", "5098", "5101", "5100"], ans: 3 },
+                    { q: "Kết quả của 8⁶ : 8⁴ dưới dạng lũy thừa là:", opts: ["8¹⁰", "8³", "8²", "8²⁴"], ans: 2 },
+                    { q: "Giá trị của biểu thức 28 + 4 · 8 − 9 là:", opts: ["247", "51", "265", "69"], ans: 1 },
+                    { q: "Số nào sau đây là ước của 40?", opts: ["26", "30", "4", "33"], ans: 2 },
+                    { q: "Số nào sau đây là số nguyên tố?", opts: ["91", "83", "77", "87"], ans: 1 },
+                    { q: "Lục giác đều có bao nhiêu cạnh?", opts: ["6", "4", "5", "8"], ans: 0 },
+                    { q: "Để số 5*3 chia hết cho 9 thì chữ số * là:", opts: ["1", "0", "2", "3"], ans: 0 },
+                    { q: "Phân tích số 150 ra thừa số nguyên tố đúng là:", opts: ["2² · 3 · 5²", "6 · 5²", "2 · 3 · 7²", "2 · 3 · 5²"], ans: 3 },
+                    { q: "Hình vuông có chu vi 48 cm. Độ dài cạnh của hình vuông là:", opts: ["24 cm", "12 cm", "48 cm", "16 cm"], ans: 1 },
+                    { q: "Mảnh đất hình chữ nhật chu vi 84 m, chiều dài hơn chiều rộng 8 m. Diện tích là:", opts: ["625 m²", "289 m²", "425 m²", "442 m²"], ans: 2 }
+                ],
+                part2: [
+                    { context: "Cho hai số tự nhiên 54 và 90. Xét tính đúng, sai:", statements: [
+                        { text: "a) 119 là số nguyên tố.", ans: false },
+                        { text: "b) 90 là bội của 5.", ans: true },
+                        { text: "c) 54 chia hết cho 5.", ans: false },
+                        { text: "d) BCNN(54, 90) = 270.", ans: true }
+                    ]},
+                    { context: "Khu vườn hình bình hành ABCD với AB = 24 m, AD = 13 m, h = 12 m. Xét đúng, sai:", statements: [
+                        { text: "a) Cạnh CD dài 24 m.", ans: true },
+                        { text: "b) Hai đường chéo AC và BD vuông góc với nhau.", ans: false },
+                        { text: "c) Chu vi khu vườn là 74 m.", ans: true },
+                        { text: "d) Trồng cỏ cả khu vườn giá 20.000 đ/m² thì chi phí là 5.760.000 đ.", ans: true }
+                    ]}
+                ],
+                part3: [
+                    { q: "Giá trị của biểu thức 2⁴ · 3 − 20 : 5 là bao nhiêu?", ans: "44" },
+                    { q: "Số tự nhiên lớn nhất có 2 chữ số là bội của 13 là số nào?", ans: "91" },
+                    { q: "Tìm ƯCLN(30, 45, 75).", ans: "15" },
+                    { q: "Cửa hàng có 185 bánh, xếp vào hộp 8 chiếc. Mỗi hộp bán 70k. Bán hết hộp đầy thu bao nhiêu nghìn?", ans: "1610" }
+                ],
+                part4: [
+                    { q: "<strong>Bài 1 (1,0 điểm).</strong><br>a) Tính hợp lí: A = 85 · 43 + 85 · 57 − 2500.<br>b) Tìm số tự nhiên x, biết: 3 · (x + 4) − 12 = 27.", guide: "a) A = 85 · (43 + 57) − 2500 = 8500 − 2500 = 6000.<br>b) 3 · (x + 4) = 39 => x + 4 = 13 => x = 9." },
+                    { q: "<strong>Bài 2 (1,0 điểm).</strong><br>Có 56 bút bi và 84 quyển vở. Chia đều thành các phần quà sao cho số phần quà nhiều nhất.<br>a) Chia nhiều nhất bao nhiêu phần quà?<br>b) Mỗi phần quà có bao nhiêu bút, bao nhiêu vở?", guide: "a) Số phần quà nhiều nhất là ƯCLN(56, 84) = 28 phần.<br>b) Mỗi phần quà có: 56 : 28 = 2 bút và 84 : 28 = 3 vở." },
+                    { q: "<strong>Bài 3 (1,0 điểm).</strong><br>Sân vườn hình chữ nhật 20 m × 14 m, xây bồn hoa hình vuông cạnh 5 m ở góc, phần còn lại lát gạch.<br>a) Tính diện tích phần lát gạch.<br>b) Chi phí lát gạch là 180.000 đ/m², tính tổng chi phí.", guide: "a) S sân = 280 m², S bồn = 25 m² => S lát gạch = 280 − 25 = 255 m².<br>b) Chi phí = 255 · 180.000 = 45.900.000 đ." }
+                ]
+            },
+            "108": {
+                part1: [
+                    { q: "Tập hợp M = {x ∈ N* | x < 7} viết theo cách liệt kê là:", opts: ["{1; 2; 3; 4; 5; 6; 7}", "{1; 2; 3; 4; 5; 6}", "{0; 1; 2; 3; 4; 5; 6}", "{0; 1; 2; 3; 4; 5; 6; 7}"], ans: 1 },
+                    { q: "Số 23 được viết bằng số La Mã là:", opts: ["XXV", "XIX", "XIII", "XXIII"], ans: 3 },
+                    { q: "Số tự nhiên liền trước của số 8000 là:", opts: ["8001", "7998", "7999", "7990"], ans: 2 },
+                    { q: "Giá trị của lũy thừa 3⁴ là:", opts: ["27", "12", "81", "64"], ans: 2 },
+                    { q: "Giá trị của biểu thức 6 · (12 + 7) − 11 là:", opts: ["103", "125", "90", "48"], ans: 0 },
+                    { q: "Số nào sau đây là bội của 14?", opts: ["108", "90", "180", "70"], ans: 3 },
+                    { q: "Số nào sau đây là hợp số?", opts: ["73", "71", "57", "59"], ans: 2 },
+                    { q: "Ba góc của tam giác đều:", opts: ["đều là góc vuông", "bằng nhau", "đều là góc tù", "khác nhau đôi một"], ans: 1 },
+                    { q: "Cho A = 30 + 24 + x. Để A chia hết cho 6 thì x có thể là:", opts: ["57", "54", "39", "31"], ans: 1 },
+                    { q: "Phân tích số 180 ra thừa số nguyên tố đúng là:", opts: ["180 = 2² · 3² · 5", "72 = 4 · 2 · 3²", "120 = 2⁴ · 3 · 5", "252 = 4 · 3² · 7"], ans: 0 },
+                    { q: "Một lục giác đều có cạnh 13 cm. Chu vi lục giác đó là:", opts: ["19 cm", "65 cm", "39 cm", "78 cm"], ans: 3 },
+                    { q: "Tấm bìa hình vuông cạnh 20 dm, cắt góc chữ nhật 6 dm × 4 dm. Diện tích còn lại:", opts: ["376 dm²", "390 dm²", "224 dm²", "424 dm²"], ans: 0 }
+                ],
+                part2: [
+                    { context: "Cho hai số tự nhiên 66 và 99. Xét tính đúng, sai:", statements: [
+                        { text: "a) 161 là hợp số.", ans: true },
+                        { text: "b) 99 là bội của 13.", ans: false },
+                        { text: "c) 66 chia hết cho 2.", ans: true },
+                        { text: "d) ƯCLN(66, 99) = 33.", ans: true }
+                    ]},
+                    { context: "Thửa ruộng hình thang cân ABCD (AB//CD) có AB = 10 m, CD = 20 m, AD = BC = 13 m, h = 12 m. Xét đúng, sai:", statements: [
+                        { text: "a) Hai đáy AB và CD có độ dài bằng nhau.", ans: false },
+                        { text: "b) Hai đường chéo AC và BD bằng nhau.", ans: true },
+                        { text: "c) Diện tích thửa ruộng là 180 m².", ans: true },
+                        { text: "d) Làm bờ rào xung quanh giá 150.000 đ/m thì chi phí là 8.400.000 đ.", ans: true }
+                    ]}
+                ],
+                part3: [
+                    { q: "Giá trị của biểu thức 90 − 4 · (2² + 5) là bao nhiêu?", ans: "54" },
+                    { q: "Số tự nhiên nhỏ nhất có 3 chữ số là bội của 17 là số nào?", ans: "102" },
+                    { q: "Tìm BCNN(6, 9, 12).", ans: "36" },
+                    { q: "Đoàn 5 người lớn (vé 90k) và 42 học sinh (vé 45k). Tổng tiền vé là bao nhiêu nghìn?", ans: "2340" }
+                ],
+                part4: [
+                    { q: "<strong>Bài 1 (1,0 điểm).</strong><br>a) Thực hiện phép tính: C = 5³ : 5² + 4² · 3 − 2³.<br>b) Tìm số tự nhiên x, biết: 3ˣ · 2 = 162.", guide: "a) C = 5 + 16 · 3 − 8 = 5 + 48 − 8 = 45.<br>b) 3ˣ = 162 : 2 = 81 = 3⁴ => x = 4." },
+                    { q: "<strong>Bài 2 (1,0 điểm).</strong><br>An cứ 9 ngày trực 1 lần, Bình cứ 12 ngày trực 1 lần. Hôm nay hai bạn cùng trực.<br>a) Sau ít nhất bao nhiêu ngày hai bạn lại cùng trực?<br>b) Khi đó An trực mấy lần, Bình trực mấy lần?", guide: "a) Số ngày ít nhất là BCNN(9, 12) = 36 ngày.<br>b) An trực 36 : 9 = 4 lần; Bình trực 36 : 12 = 3 lần." },
+                    { q: "<strong>Bài 3 (1,0 điểm).</strong><br>Phòng khách hình chữ nhật 9 m × 6 m, lát gạch hình vuông cạnh 5 dm.<br>a) Tính số viên gạch cần dùng.<br>b) Mỗi viên gạch giá 25.000 đ. Tính tổng tiền mua gạch.", guide: "a) Đổi 9 m = 90 dm, 6 m = 60 dm. Số viên = (90:5) · (60:5) = 18 · 12 = 216 viên.<br>b) Tiền = 216 · 25.000 = 5.400.000 đ." }
+                ]
+            },
+            "109": {
+                part1: [
+                    { q: "Cho tập hợp B = {x ∈ N | 8 < x < 13}. Khẳng định nào đúng?", opts: ["B có 5 phần tử", "8 ∈ B", "13 ∈ B", "12 ∈ B"], ans: 3 },
+                    { q: "Số tự nhiên gồm 5 chục nghìn, 3 nghìn, 0 trăm, 8 chục, 9 đơn vị là:", opts: ["50 389", "53 089", "53 098", "53 809"], ans: 1 },
+                    { q: "Dãy số nào được sắp xếp theo thứ tự tăng dần?", opts: ["8548; 8458; 8845; 8854", "8458; 8548; 8854; 8845", "8458; 8548; 8845; 8854", "8854; 8845; 8548; 8458"], ans: 2 },
+                    { q: "Viết tích 3 · 3 · 3 · 3 · 3 · 3 dưới dạng lũy thừa ta được:", opts: ["6³", "3⁶", "3⁵", "3 · 6"], ans: 1 },
+                    { q: "Giá trị của biểu thức 5 + 2² · 6 là:", opts: ["149", "294", "54", "29"], ans: 3 },
+                    { q: "Tập hợp các ước của 32 là:", opts: ["{1; 2; 4; 8; 16; 32}", "{1; 2; 4; 8; 16}", "{1; 2; 4; 8; 16; 28; 32}", "{2; 4; 8; 16; 32}"], ans: 0 },
+                    { q: "Phát biểu nào sau đây là đúng?", opts: ["Số 1 không là số nguyên tố cũng không là hợp số", "Tổng hai số nguyên tố luôn là số nguyên tố", "Hợp số chỉ có đúng 2 ước", "Mọi số lẻ đều là số nguyên tố"], ans: 0 },
+                    { q: "Lục giác đều có bao nhiêu góc?", opts: ["8", "3", "6", "4"], ans: 2 },
+                    { q: "Số nào chia hết cho cả 2 và 5?", opts: ["1179", "8796", "2230", "8675"], ans: 2 },
+                    { q: "Phân tích số 210 ra thừa số nguyên tố ta được:", opts: ["2 · 3 · 5 · 11", "2² · 3 · 5 · 7", "6 · 5 · 7", "2 · 3 · 5 · 7"], ans: 3 },
+                    { q: "Lục giác đều ABCDEF cạnh AB = 14 cm. Độ dài đường chéo chính AD là:", opts: ["28 cm", "14 cm", "42 cm", "84 cm"], ans: 0 },
+                    { q: "Sân chơi hình chữ nhật 30 m × 22 m. Tăng chiều dài 7 m, giữ nguyên chiều rộng thì diện tích tăng thêm:", opts: ["210 m²", "154 m²", "814 m²", "29 m²"], ans: 1 }
+                ],
+                part2: [
+                    { context: "Cho hai số tự nhiên 40 và 56. Xét tính đúng, sai:", statements: [
+                        { text: "a) 89 là hợp số.", ans: false },
+                        { text: "b) 8 là ước của 40.", ans: true },
+                        { text: "c) 56 chia hết cho 2.", ans: true },
+                        { text: "d) BCNN(40, 56) = 140.", ans: false }
+                    ]},
+                    { context: "Mảnh đất hình chữ nhật ABCD có AB = 24 m, BC = 15 m. Xét đúng, sai:", statements: [
+                        { text: "a) Cạnh CD dài 24 m.", ans: true },
+                        { text: "b) Hai đường chéo AC và BD vuông góc với nhau.", ans: false },
+                        { text: "c) Chu vi mảnh đất là 78 m.", ans: true },
+                        { text: "d) Trồng cỏ cả mảnh đất giá 30.000 đ/m² thì chi phí là 2.340.000 đ.", ans: false }
+                    ]}
+                ],
+                part3: [
+                    { q: "Giá trị của biểu thức 6² + 5 · (18 − 2 · 6) là bao nhiêu?", ans: "66" },
+                    { q: "Số 36 có bao nhiêu ước?", ans: "9" },
+                    { q: "Tìm ƯCLN(72, 108).", ans: "36" },
+                    { q: "Trường tổ chức cho 412 HS đi trải nghiệm, xe chở tối đa 45 HS. Cần thuê ít nhất bao nhiêu xe?", ans: "10" }
+                ],
+                part4: [
+                    { q: "<strong>Bài 1 (1,0 điểm).</strong><br>a) Tính hợp lí: B = 2 · 43 · 50.<br>b) Tìm số tự nhiên x, biết: x : 4 + 28 = 43.", guide: "a) B = (2 · 50) · 43 = 100 · 43 = 4300.<br>b) x : 4 = 15 => x = 60." },
+                    { q: "<strong>Bài 2 (1,0 điểm).</strong><br>Cửa hàng có từ 150 đến 200 chiếc bánh. Xếp vào hộp 12 chiếc hoặc 18 chiếc đều vừa đủ.<br>a) Tìm BCNN(12, 18).<br>b) Tính số chiếc bánh của cửa hàng.", guide: "a) BCNN(12, 18) = 36.<br>b) x ∈ BC(12, 18) = B(36) và 150 ≤ x ≤ 200 => x = 180." },
+                    { q: "<strong>Bài 3 (1,0 điểm).</strong><br>Khu vườn hình bình hành ABCD có đáy AB = 20 m, cạnh bên AD = 13 m, h = 12 m.<br>a) Tính diện tích khu vườn.<br>b) Làm hàng rào xung quanh giá 100.000 đ/m. Tính chi phí làm hàng rào.", guide: "a) S = 20 · 12 = 240 m².<br>b) Chu vi = 2 · (20 + 13) = 66 m. Chi phí = 66 · 100.000 = 6.600.000 đ." }
+                ]
+            },
+            "110": {
+                part1: [
+                    { q: "Cho tập hợp B = {3; 8; 19; 26}. Cách viết nào đúng?", opts: ["{26} ∈ B", "26 ∈ B", "8 ∉ B", "14 ∈ B"], ans: 1 },
+                    { q: "Số La Mã XXVI có giá trị là:", opts: ["24", "30", "22", "26"], ans: 3 },
+                    { q: "Số tự nhiên liền sau của số 6099 là:", opts: ["6100", "6101", "6098", "6097"], ans: 0 },
+                    { q: "Kết quả của 5³ · 5² viết dưới dạng lũy thừa là:", opts: ["5⁴", "5⁵", "5⁶", "25⁵"], ans: 1 },
+                    { q: "Giá trị của biểu thức 27 + 9 · 4 − 18 là:", opts: ["126", "162", "45", "81"], ans: 2 },
+                    { q: "Số nào sau đây là ước của 56?", opts: ["26", "43", "32", "7"], ans: 3 },
+                    { q: "Số nào sau đây là số nguyên tố?", opts: ["89", "63", "77", "33"], ans: 0 },
+                    { q: "Khẳng định nào về hình vuông ABCD là đúng?", opts: ["AB = CD nhưng AB ≠ BC", "Góc A là góc nhọn", "AB = BC = CD = DA", "Hai đường chéo AC và BD không bằng nhau"], ans: 2 },
+                    { q: "Số nào sau đây chia hết cho 9?", opts: ["6767", "1959", "1656", "2609"], ans: 2 },
+                    { q: "Phân tích số 252 ra thừa số nguyên tố đúng là:", opts: ["150 = 6 · 5²", "252 = 2² · 3² · 7", "60 = 4 · 3 · 5", "84 = 2³ · 3 · 7"], ans: 1 },
+                    { q: "Phát biểu nào sau đây đúng với lục giác đều?", opts: ["Lục giác đều có 3 đường chéo chính bằng nhau", "Có 6 cạnh không bằng nhau", "Có 4 đường chéo chính", "Có 6 góc không bằng nhau"], ans: 0 },
+                    { q: "Mảnh đất hình chữ nhật chu vi 80 m, chiều dài hơn chiều rộng 12 m. Diện tích là:", opts: ["196 m²", "676 m²", "378 m²", "364 m²"], ans: 3 }
+                ],
+                part2: [
+                    { context: "Cho hai số tự nhiên 60 và 84. Xét tính đúng, sai:", statements: [
+                        { text: "a) 67 là số nguyên tố.", ans: true },
+                        { text: "b) 3 là ước của 84.", ans: true },
+                        { text: "c) 60 chia hết cho 9.", ans: false },
+                        { text: "d) BCNN(60, 84) = 420.", ans: true }
+                    ]},
+                    { context: "Khu vườn hình bình hành ABCD có AB = 30 m, AD = 15 m, h = 12 m. Xét đúng, sai:", statements: [
+                        { text: "a) Cạnh CD dài 30 m.", ans: true },
+                        { text: "b) Cạnh AD song song với cạnh BC.", ans: true },
+                        { text: "c) Diện tích khu vườn là 450 m².", ans: false },
+                        { text: "d) Làm hàng rào xung quanh giá 100.000 đ/m thì chi phí là 36.000.000 đ.", ans: false }
+                    ]}
+                ],
+                part3: [
+                    { q: "Giá trị của biểu thức 5² · 2 − 30 : 6 là bao nhiêu?", ans: "45" },
+                    { q: "Có bao nhiêu số tự nhiên khác 0, nhỏ hơn 80, là bội của 9?", ans: "8" },
+                    { q: "Tìm BCNN(14, 21).", ans: "42" },
+                    { q: "Mẹ mua 6 kg gạo (16k/kg) và 2 chai dầu ăn (48k/chai). Đưa 250k. Cô bán hàng trả lại bao nhiêu nghìn?", ans: "58" }
+                ],
+                part4: [
+                    { q: "<strong>Bài 1 (1,0 điểm).</strong><br>a) Thực hiện phép tính: C = 10² − 3⁴ : 3² + 2⁵.<br>b) Tìm số tự nhiên x, biết: 12 + 4 · (x − 5) = 36.", guide: "a) C = 100 − 9 + 32 = 123.<br>b) 4 · (x − 5) = 24 => x − 5 = 6 => x = 11." },
+                    { q: "<strong>Bài 2 (1,0 điểm).</strong><br>Sân hình chữ nhật 42 m × 30 m. Lát kín sân bằng gạch hình vuông cạnh nguyên mét lớn nhất có thể.<br>a) Cạnh viên gạch dài bao nhiêu mét?<br>b) Cần bao nhiêu viên gạch để lát kín sân?", guide: "a) Cạnh viên gạch là ƯCLN(42, 30) = 6 m.<br>b) Số viên gạch = (42 : 6) · (30 : 6) = 7 · 5 = 35 viên." },
+                    { q: "<strong>Bài 3 (1,0 điểm).</strong><br>Mảnh đất hình thoi ABCD có AC = 30 m, BD = 16 m.<br>a) Tính diện tích mảnh đất.<br>b) Trồng hoa cả mảnh đất, mỗi m² trồng 3 cây, giá 4.000 đ/cây. Tính số tiền mua cây giống.", guide: "a) S = (30 · 16) / 2 = 240 m².<br>b) Số cây = 240 · 3 = 720 cây. Tiền = 720 · 4.000 = 2.880.000 đ." }
+                ]
+            }
+        };
+
+        // Quản lý đăng nhập & Đổi thông tin
+        function handleLogin(e) {
+            e.preventDefault();
+            studentInfo.name = document.getElementById('student-name').value.trim();
+            studentInfo.studentClass = document.getElementById('student-class').value.trim();
+            studentInfo.sbd = document.getElementById('student-sbd').value.trim();
+
+            if (!studentInfo.name || !studentInfo.studentClass) {
+                showModal('Chú ý', 'Vui lòng nhập đầy đủ Họ tên và Lớp!', [{ text: 'Đã hiểu', class: 'bg-sky-600 text-white w-full font-bold' }]);
+                return;
+            }
+
+            document.getElementById('display-student-name').innerText = studentInfo.name;
+            document.getElementById('display-student-class').innerText = studentInfo.studentClass;
+            
+            if (studentInfo.sbd) {
+                document.getElementById('display-student-sbd').innerText = studentInfo.sbd;
+                document.getElementById('display-sbd-wrapper').classList.remove('hidden');
+            } else {
+                document.getElementById('display-sbd-wrapper').classList.add('hidden');
+            }
+
+            document.getElementById('screen-login').classList.add('hidden');
+            document.getElementById('screen-home').classList.remove('hidden');
+            initApp();
+        }
+
+        function logoutStudent() {
+            document.getElementById('screen-home').classList.add('hidden');
+            document.getElementById('screen-login').classList.remove('hidden');
+        }
+
+        // Khởi tạo trang chủ với thiết kế card động & nhẹ nhàng
+        function initApp() {
+            const list = document.getElementById('exam-list');
+            list.innerHTML = '';
+            ['101', '102', '103', '104', '105', '106', '107', '108', '109', '110'].forEach(code => {
+                const btn = document.createElement('button');
+                const isReady = !!exams[code];
+                
+                btn.className = `group relative p-5 rounded-2xl font-bold text-base transition-all duration-300 border text-left flex flex-col justify-between min-h-[110px] card-shimmer ${
+                    isReady 
+                        ? 'bg-gradient-to-br from-white to-sky-50/50 border-sky-100 text-slate-800 hover:border-sky-300 hover:shadow-lg hover:shadow-sky-500/10 hover:-translate-y-1' 
+                        : 'bg-slate-50 border-slate-200 text-slate-400 cursor-not-allowed opacity-60'
+                }`;
+                
+                btn.innerHTML = `
+                    <div class="flex items-center justify-between w-full mb-2">
+                        <span class="text-xs uppercase font-extrabold tracking-wider ${isReady ? 'text-sky-600' : 'text-slate-400'}">Đề Thi</span>
+                        <span class="w-2 h-2 rounded-full ${isReady ? 'bg-emerald-400 group-hover:scale-125 transition-transform' : 'bg-slate-300'}"></span>
+                    </div>
+                    <div>
+                        <span class="text-xl font-extrabold block ${isReady ? 'text-slate-800 group-hover:text-sky-600' : 'text-slate-400'}">Mã ${code}</span>
+                        <span class="text-[11px] font-normal text-slate-400 block mt-0.5">${isReady ? 'Sẵn sàng thi' : 'Đang cập nhật'}</span>
+                    </div>
+                `;
+                
+                btn.onclick = () => {
+                    if (isReady) startExam(code);
+                    else showModal('Thông báo', 'Mã đề này đang được cập nhật!', [{text: 'Đóng', class: 'bg-sky-600 text-white w-full font-semibold py-2 rounded-xl'}]);
+                };
+                list.appendChild(btn);
+            });
+        }
+
+        // Bắt đầu thi
+        function startExam(code) {
+            currentCode = code;
+            document.getElementById('screen-home').classList.add('hidden');
+            const examScreen = document.getElementById('screen-exam');
+            examScreen.classList.remove('hidden');
+            
+            document.getElementById('exam-title-code').innerText = code;
+            document.getElementById('exam-student-info').innerText = `${studentInfo.name} - Lớp ${studentInfo.studentClass}${studentInfo.sbd ? ' (Phân hiệu: ' + studentInfo.sbd + ')' : ''}`;
+            renderExamContent(exams[code]);
+            
+            // Bật trạng thái thi và đặt lại biến
+            isExamActive = true;
+            cheatWarnings = 0;
+            
+            // Hẹn giờ (giao diện)
+            document.getElementById('exam-timer').classList.remove('hidden');
+            timeLeft = 90 * 60;
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+                const s = (timeLeft % 60).toString().padStart(2, '0');
+                document.getElementById('timer-text').innerText = `${m}:${s}`;
+                if(timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitExam(); // Hết giờ tự nộp
+                }
+            }, 1000);
+            
+            window.scrollTo(0,0);
+        }
+
+        // Render toàn bộ nội dung HTML của đề
+        function renderExamContent(data) {
+            const container = document.getElementById('exam-content');
+            let html = '';
+
+            // PHẦN I: Trắc nghiệm ABCD
+            html += `<section class="mb-10 bg-white p-6 md:p-8 rounded-3xl shadow-sm border-t-4 border-blue-500">
+                <h3 class="text-xl md:text-2xl font-black text-blue-800 mb-6 pb-2 border-b-2 border-blue-100 flex items-center gap-2">
+                    <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-lg">I</span> TRẮC NGHIỆM NHIỀU LỰA CHỌN (3,0 ĐIỂM)
+                </h3>
+                <div class="space-y-6">`;
+            data.part1.forEach((q, i) => {
+                html += `<div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <p class="font-bold text-lg mb-4 text-slate-800">Câu ${i+1}: <span class="font-normal">${q.q}</span></p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">`;
+                const labels = ['A', 'B', 'C', 'D'];
+                q.opts.forEach((opt, j) => {
+                    html += `<label class="flex items-center p-4 border-2 border-slate-200 rounded-xl bg-white cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition radio-container shadow-sm">
+                        <input type="radio" name="p1_q${i}" value="${j}" class="w-5 h-5 text-blue-600 radio-custom mr-3">
+                        <span class="text-base"><strong>${labels[j]}.</strong> ${opt}</span>
+                    </label>`;
+                });
+                html += `</div></div>`;
+            });
+            html += `</div></section>`;
+
+            // PHẦN II: Đúng / Sai
+            html += `<section class="mb-10 bg-white p-6 md:p-8 rounded-3xl shadow-sm border-t-4 border-emerald-500">
+                <h3 class="text-xl md:text-2xl font-black text-emerald-800 mb-6 pb-2 border-b-2 border-emerald-100 flex items-center gap-2">
+                    <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-lg text-lg">II</span> TRẮC NGHIỆM ĐÚNG/SAI (2,0 ĐIỂM)
+                </h3>
+                <div class="space-y-8">`;
+            data.part2.forEach((q, i) => {
+                html += `<div class="bg-emerald-50/30 p-5 rounded-2xl border border-emerald-100 shadow-sm">
+                    <p class="font-bold text-lg mb-5 text-slate-800">Câu ${i+1}: <span class="font-normal">${q.context}</span></p>
+                    <div class="overflow-x-auto rounded-xl border border-emerald-200 shadow-sm">
+                        <table class="w-full text-left bg-white overflow-hidden min-w-[500px]">
+                            <thead class="bg-emerald-100/60 text-emerald-800 border-b border-emerald-200"><tr><th class="p-4 w-12 text-center">Ý</th><th class="p-4">Nội dung</th><th class="p-4 text-center w-24">Đúng</th><th class="p-4 text-center w-24">Sai</th></tr></thead>
+                            <tbody>`;
+                q.statements.forEach((stmt, j) => {
+                    html += `<tr class="border-b border-emerald-50 last:border-0 hover:bg-emerald-50 transition">
+                        <td class="p-4 font-bold text-center text-emerald-700">${['a','b','c','d'][j]}</td>
+                        <td class="p-4 text-slate-700">${stmt.text.substring(3)}</td>
+                        <td class="p-4 text-center bg-green-50/40"><input type="radio" name="p2_q${i}_s${j}" value="true" class="w-6 h-6 radio-custom accent-green-600 cursor-pointer"></td>
+                        <td class="p-4 text-center bg-red-50/40"><input type="radio" name="p2_q${i}_s${j}" value="false" class="w-6 h-6 radio-custom accent-red-600 cursor-pointer"></td>
+                    </tr>`;
+                });
+                html += `</tbody></table></div></div>`;
+            });
+            html += `</div></section>`;
+
+            // PHẦN III: Trả lời ngắn
+            html += `<section class="mb-10 bg-white p-6 md:p-8 rounded-3xl shadow-sm border-t-4 border-amber-500">
+                <h3 class="text-xl md:text-2xl font-black text-amber-800 mb-6 pb-2 border-b-2 border-amber-100 flex items-center gap-2">
+                    <span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-lg text-lg">III</span> TRẢ LỜI NGẮN (2,0 ĐIỂM)
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">`;
+            data.part3.forEach((q, i) => {
+                html += `<div class="bg-amber-50/30 p-5 rounded-2xl border border-amber-100 shadow-sm hover:shadow-md transition">
+                    <p class="font-bold text-lg mb-4 text-slate-800">Câu ${i+1}: <span class="font-normal">${q.q}</span></p>
+                    <div class="relative">
+                        <input type="text" id="p3_q${i}" class="w-full p-4 pl-4 pr-12 border-2 border-amber-200 rounded-xl font-bold text-amber-900 text-lg focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/20 transition bg-white shadow-inner" placeholder="Nhập đáp số...">
+                    </div>
+                </div>`;
+            });
+            html += `</div></section>`;
+
+            // PHẦN IV: Tự luận
+            html += `<section class="mb-10 bg-white p-6 md:p-8 rounded-3xl shadow-sm border-t-4 border-purple-500">
+                <h3 class="text-xl md:text-2xl font-black text-purple-800 mb-2 pb-2 border-b-2 border-purple-100 flex items-center gap-2">
+                    <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-lg text-lg">IV</span> TỰ LUẬN (3,0 ĐIỂM)
+                </h3>
+                <p class="text-sm font-semibold text-purple-600 mb-6 bg-purple-50 p-3 rounded-lg flex items-start md:items-center gap-2">
+                    <svg class="w-5 h-5 mt-0.5 md:mt-0 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Học sinh có thể gõ trực tiếp lời giải HOẶC làm bài ra giấy rồi bấm nút tải ảnh lên (tối đa 1 ảnh/câu).
+                </p>
+                <div class="space-y-8">`;
+            data.part4.forEach((q, i) => {
+                html += `<div class="bg-purple-50/30 p-5 md:p-6 rounded-2xl border border-purple-100 shadow-sm">
+                    <p class="mb-4 text-lg text-slate-800">${q.q}</p>
+                    <div class="space-y-4">
+                        <textarea id="p4_q${i}" rows="3" class="w-full p-4 border-2 border-purple-200 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition bg-white text-base shadow-inner" placeholder="Gõ lời giải vào đây..."></textarea>
+                        
+                        <!-- Upload Ảnh -->
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-white p-4 rounded-xl border border-purple-100 shadow-sm">
+                            <label class="cursor-pointer bg-purple-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-purple-700 transition flex items-center gap-2 shadow-md hover:shadow-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                Tải lên ảnh bài làm
+                                <input type="file" id="p4_file${i}" class="hidden" accept="image/*" onchange="handleFileUpload(event, ${i})">
+                            </label>
+                            <span id="p4_filename${i}" class="text-sm font-medium text-slate-500 italic">Chưa có ảnh nào</span>
+                        </div>
+                        
+                        <!-- Preview Image -->
+                        <div id="p4_preview_container${i}" class="hidden mt-4 relative inline-block">
+                            <p class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">Ảnh xem trước:</p>
+                            <img id="p4_preview${i}" class="max-h-80 rounded-xl border-4 border-white shadow-lg">
+                            <button onclick="removeImage(${i})" class="absolute top-6 -right-3 bg-red-500 text-white rounded-full p-1.5 shadow-md hover:bg-red-600 transition" title="Xóa ảnh">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+            });
+            html += `</div></section>`;
+
+            container.innerHTML = html;
+        }
+
+        // Xử lý upload ảnh (FileReader)
+        const uploadedImages = {};
+        function handleFileUpload(event, questionIndex) {
+            const file = event.target.files[0];
+            if (file) {
+                document.getElementById(`p4_filename${questionIndex}`).innerText = file.name;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgPreview = document.getElementById(`p4_preview${questionIndex}`);
+                    imgPreview.src = e.target.result;
+                    document.getElementById(`p4_preview_container${questionIndex}`).classList.remove('hidden');
+                    uploadedImages[questionIndex] = e.target.result; // Lưu vào biến tạm
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function removeImage(questionIndex) {
+            document.getElementById(`p4_file${questionIndex}`).value = '';
+            document.getElementById(`p4_filename${questionIndex}`).innerText = 'Chưa có ảnh nào';
+            document.getElementById(`p4_preview_container${questionIndex}`).classList.add('hidden');
+            delete uploadedImages[questionIndex];
+        }
+
+        // Xác nhận nộp
+        function confirmSubmit() {
+            // Quy định thời gian: Ít nhất 30 phút (1800 giây) mới được nộp
+            const elapsedSeconds = (90 * 60) - timeLeft;
+            if (elapsedSeconds < 30 * 60) {
+                const min = Math.floor(elapsedSeconds / 60);
+                showModal('Chưa thể nộp bài!', `Theo quy định, bạn phải làm bài ít nhất 30 phút mới được nộp.\n\nThời gian bạn đã làm: ${min} phút. Hãy tận dụng thời gian để kiểm tra lại bài làm thật kĩ!`, [
+                    {text: 'Đã hiểu', class: 'bg-indigo-600 text-white w-full font-bold hover:bg-indigo-700', onClick: hideModal}
+                ]);
+                return;
+            }
+
+            showModal('Xác nhận nộp bài', 'Bạn đã kiểm tra kĩ các đáp án chưa? Bạn chắc chắn muốn nộp bài chứ?', [
+                {text: 'Kiểm tra lại', class: 'bg-gray-200 text-gray-700 w-1/2 font-bold', onClick: hideModal},
+                {text: 'Nộp bài ngay', class: 'bg-green-600 text-white w-1/2 font-bold hover:bg-green-700', onClick: () => {
+                    hideModal();
+                    submitExam();
+                }}
+            ]);
+        }
+
+        // Chấm bài & Hiển thị kết quả
+        function submitExam() {
+            isExamActive = false; // Tắt cảnh báo gian lận
+            clearInterval(timerInterval);
+            document.getElementById('exam-timer').classList.add('hidden');
+            
+            const data = exams[currentCode];
+            let autoScore = 0; // max 7.0
+            
+            let reviewHtml = '';
+
+            // Chấm Phần 1
+            reviewHtml += `<h3 class="text-xl font-bold text-gray-800 mt-6 mb-4">I. Trắc nghiệm nhiều lựa chọn</h3>`;
+            data.part1.forEach((q, i) => {
+                const checked = document.querySelector(`input[name="p1_q${i}"]:checked`);
+                const userAns = checked ? parseInt(checked.value) : -1;
+                const isCorrect = userAns === q.ans;
+                if(isCorrect) autoScore += 0.25;
+
+                reviewHtml += `<div class="p-3 mb-3 rounded-lg border ${isCorrect?'bg-green-50 border-green-200':'bg-red-50 border-red-200'}">
+                    <p class="font-medium">Câu ${i+1}: ${q.q}</p>
+                    <p class="text-sm mt-1">Đáp án đúng: <strong>${['A','B','C','D'][q.ans]}</strong>. Bạn chọn: <strong class="${isCorrect?'text-green-600':'text-red-600'}">${userAns===-1 ? 'Bỏ trống' : ['A','B','C','D'][userAns]}</strong></p>
+                </div>`;
+            });
+
+            // Chấm Phần 2
+            reviewHtml += `<h3 class="text-xl font-bold text-gray-800 mt-8 mb-4">II. Trắc nghiệm Đúng/Sai</h3>`;
+            data.part2.forEach((q, i) => {
+                reviewHtml += `<div class="p-3 mb-4 rounded-lg border bg-gray-50"><p class="font-medium mb-2">Câu ${i+1}: ${q.context}</p>`;
+                q.statements.forEach((stmt, j) => {
+                    const checked = document.querySelector(`input[name="p2_q${i}_s${j}"]:checked`);
+                    const userVal = checked ? (checked.value === 'true') : null;
+                    const isCorrect = userVal === stmt.ans;
+                    if(isCorrect) autoScore += 0.25;
+
+                    reviewHtml += `<div class="flex items-center text-sm py-1 border-t border-gray-100">
+                        <span class="w-6">${['a','b','c','d'][j]})</span>
+                        <span class="flex-grow">${stmt.text.substring(3)}</span>
+                        <span class="w-32 text-right">
+                            <span class="px-2 py-1 rounded text-xs ${isCorrect?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">
+                                Đúng: ${stmt.ans ? 'Đ' : 'S'} | Chọn: ${userVal===null ? '-' : (userVal?'Đ':'S')}
+                            </span>
+                        </span>
+                    </div>`;
+                });
+                reviewHtml += `</div>`;
+            });
+
+            // Chấm Phần 3
+            reviewHtml += `<h3 class="text-xl font-bold text-gray-800 mt-8 mb-4">III. Trả lời ngắn</h3>`;
+            data.part3.forEach((q, i) => {
+                const userVal = document.getElementById(`p3_q${i}`).value.trim();
+                const isCorrect = userVal.toLowerCase() === q.ans.toLowerCase();
+                if(isCorrect) autoScore += 0.5;
+                
+                reviewHtml += `<div class="p-3 mb-3 rounded-lg border ${isCorrect?'bg-green-50 border-green-200':'bg-red-50 border-red-200'}">
+                    <p class="font-medium">Câu ${i+1}: ${q.q}</p>
+                    <p class="text-sm mt-1">Đáp án đúng: <strong>${q.ans}</strong>. Bạn điền: <strong class="${isCorrect?'text-green-600':'text-red-600'}">${userVal === '' ? 'Bỏ trống' : userVal}</strong></p>
+                </div>`;
+            });
+            
+            // Phần 4 (Không chấm, chỉ hiển thị gợi ý và ảnh upload)
+            reviewHtml += `<h3 class="text-2xl font-black text-slate-800 mt-10 mb-6 flex items-center gap-2"><span class="text-purple-600 bg-purple-100 px-3 py-1 rounded-lg">IV</span> Tự luận (Chờ giáo viên chấm)</h3>`;
+            data.part4.forEach((q, i) => {
+                const userText = document.getElementById(`p4_q${i}`).value.trim();
+                const userImgSrc = uploadedImages[i];
+                let imgHtml = '';
+                if (userImgSrc) {
+                    imgHtml = `<div class="mt-4 pt-4 border-t border-slate-200"><p class="text-xs font-bold text-slate-500 uppercase mb-3">Ảnh bài làm đính kèm:</p><img src="${userImgSrc}" class="max-h-80 rounded-xl border shadow-sm"></div>`;
+                }
+
+                reviewHtml += `<div class="p-6 mb-6 rounded-2xl border border-purple-200 bg-white shadow-md relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1.5 h-full bg-purple-500"></div>
+                    <div class="mb-4 text-lg text-slate-800">${q.q}</div>
+                    <div class="bg-slate-50 p-4 rounded-xl text-base text-slate-800 mb-4 whitespace-pre-wrap border border-slate-200"><span class="font-bold text-slate-500 uppercase text-xs block mb-2">Bài làm của bạn:</span>${userText || (userImgSrc ? '' : '<span class="text-slate-400 italic">Không có nội dung văn bản.</span>')} ${imgHtml}</div>
+                    <div class="bg-indigo-50 p-4 rounded-xl text-base text-indigo-900 border border-indigo-100"><span class="font-bold text-indigo-500 uppercase text-xs block mb-2">Đáp án / Gợi ý chấm:</span>${q.guide}</div>
+                </div>`;
+            });
+
+            // Hiển thị kết quả
+            document.getElementById('screen-exam').classList.add('hidden');
+            const resScreen = document.getElementById('screen-result');
+            resScreen.classList.remove('hidden');
+            
+            document.getElementById('res-student-info').innerText = `Học sinh: ${studentInfo.name} - Lớp: ${studentInfo.studentClass}${studentInfo.sbd ? ' (Phân hiệu: ' + studentInfo.sbd + ')' : ''}`;
+            document.getElementById('res-code').innerText = currentCode;
+            document.getElementById('res-auto-score').innerText = autoScore.toFixed(2);
+            document.getElementById('review-content').innerHTML = reviewHtml;
+
+            window.scrollTo(0,0);
+            
+            // TỰ ĐỘNG BẮN DỮ LIỆU VỀ GOOGLE DRIVE CỦA THẦY HIỆN
+            sendDataToTeacher(autoScore);
+        }
+
+        // Custom Modal UI
+        function showModal(title, msg, btns) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = msg;
+            const actionDiv = document.getElementById('modal-actions');
+            actionDiv.innerHTML = '';
+            btns.forEach(b => {
+                const btn = document.createElement('button');
+                btn.className = `px-4 py-2 rounded-lg font-bold transition ${b.class}`;
+                btn.innerText = b.text;
+                btn.onclick = b.onClick || hideModal;
+                actionDiv.appendChild(btn);
+            });
+            const m = document.getElementById('custom-modal');
+            m.classList.remove('hidden');
+            setTimeout(() => {
+                m.classList.remove('opacity-0');
+                document.getElementById('modal-panel').classList.remove('scale-95');
+            }, 10);
+        }
+
+        function hideModal() {
+            const m = document.getElementById('custom-modal');
+            m.classList.add('opacity-0');
+            document.getElementById('modal-panel').classList.add('scale-95');
+            setTimeout(() => m.classList.add('hidden'), 300);
+        }
+
+        // Tự động bắn dữ liệu về Google Drive
+        function sendDataToTeacher(score) {
+            // Đường link Web App Google Script của thầy
+            const url = "https://script.google.com/macros/s/AKfycbxyBOsMecntn_HI8S029bZhBRcDSYmigCE0SwvZACsIGSENrTvFDZE4ZlDC8h9YSxTQ/exec";
+            
+            // Tính số giây đã làm
+            const timeElapsed = (90 * 60) - timeLeft; 
+            
+            // Đóng gói dữ liệu gửi đi
+            const formData = new URLSearchParams();
+            formData.append('hoTen', studentInfo.name);
+            formData.append('lop', studentInfo.studentClass);
+            formData.append('phanHieu', studentInfo.sbd);
+            formData.append('maDe', currentCode);
+            formData.append('diemTracNghiem', score.toFixed(2));
+            formData.append('thoiGianLam', timeElapsed);
+
+            // Fetch API gửi dữ liệu ngầm (sử dụng mode no-cors để tránh bị chặn bởi trình duyệt)
+            fetch(url, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData.toString()
+            }).then(() => {
+                console.log("Đã gửi dữ liệu thành công về hệ thống máy chủ của giáo viên.");
+            }).catch(error => {
+                console.error("Lỗi khi gửi dữ liệu: ", error);
+            });
+        }
+
+        // Chạy app
+        initApp();
+    </script>
+</body>
+</html>
